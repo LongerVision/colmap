@@ -36,16 +36,34 @@ endif()
 
 set(OPTIONAL_LIBS)
 if(CUDA_ENABLED)
+    find_package(CUDA REQUIRED)
     list(APPEND OPTIONAL_LIBS
         colmap_util_cuda
         colmap_mvs_cuda
     )
+    include_directories(${CUDA_INCLUDE_DIRS})
 endif()
+
 if(GUI_ENABLED)
+    find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)  # Example for Qt
     list(APPEND OPTIONAL_LIBS
         colmap_ui
     )
+    include_directories(${Qt5Widgets_INCLUDE_DIRS})
 endif()
+
+find_library(VL_LIB NAMES vl PATHS /usr/local/lib REQUIRED)
+find_path(VL_INCLUDE_DIR NAMES vlfeat PATHS /usr/local/include REQUIRED)
+message(STATUS "VLFeat library found at: ${VL_LIB}")
+
+find_library(SiftGPU_LIB NAMES siftgpu PATHS /usr/local/lib REQUIRED)
+if(NOT SiftGPU_LIB)
+    message(FATAL_ERROR "SiftGPU library not found")
+else()
+    message(STATUS "SiftGPU library found at: ${SiftGPU_LIB}")
+endif()
+
+include_directories(${VL_INCLUDE_DIR})
 
 COLMAP_ADD_LIBRARY(
     NAME colmap_exe
@@ -63,7 +81,6 @@ COLMAP_ADD_LIBRARY(
         colmap_util
     PRIVATE_LINK_LIBS
         Boost::boost
-        colmap_sfm
 )
 
 COLMAP_ADD_EXECUTABLE(
@@ -73,7 +90,6 @@ COLMAP_ADD_EXECUTABLE(
         sfm.cc
         colmap.cc
         database.cc
-        feature.cc
         gui.cc
         image.cc
         model.cc
@@ -81,6 +97,7 @@ COLMAP_ADD_EXECUTABLE(
         sfm.cc
         vocab_tree.cc
     LINK_LIBS
+        colmap_feature
         colmap_controllers
         colmap_retrieval
         colmap_scene
@@ -88,5 +105,15 @@ COLMAP_ADD_EXECUTABLE(
         colmap_util
         ${OPTIONAL_LIBS}
         Boost::boost
+        ${VL_LIB}
+        ${SiftGPU_LIB}
 )
-set_target_properties(colmap_main PROPERTIES OUTPUT_NAME colmap)
+set_target_properties(colmap_main PROPERTIES
+    OUTPUT_NAME colmap
+    CXX_STANDARD 17  # Assuming C++17
+    INSTALL_RPATH_USE_LINK_PATH TRUE
+)
+
+# If you need to set a specific RPATH
+set_target_properties(colmap_main PROPERTIES INSTALL_RPATH "/usr/local/lib")
+
