@@ -37,6 +37,7 @@ COLMAP_ADD_LIBRARY(
         undistortion.h undistortion.cc
         warp.h warp.cc
     PUBLIC_LINK_LIBS
+        lsd
         colmap_scene
         Eigen3::Eigen
     PRIVATE_LINK_LIBS
@@ -44,7 +45,17 @@ COLMAP_ADD_LIBRARY(
         colmap_sensor
 )
 if(LSD_ENABLED)
-    target_link_libraries(colmap_image PRIVATE colmap_lsd)
+    # Set the LSD_DIR variable to the directory containing lsdConfig.cmake
+    set(lsd_DIR "/usr/local/lib/cmake/lsd")
+
+    # Now find the package
+    find_package(lsd REQUIRED)
+
+    # Assuming the LSD package sets include directories and libraries
+    include_directories(${lsd_INCLUDE_DIRS})
+
+    # Link against the LSD library
+    target_link_libraries(colmap_image PRIVATE ${lsd_LIBRARIES})
 endif()
 
 COLMAP_ADD_TEST(
