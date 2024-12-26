@@ -34,6 +34,7 @@ cmake_minimum_required(VERSION 3.10)
 # Options
 ################################################################################
 
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 option(SIMD_ENABLED "Whether to enable SIMD optimizations" ON)
 option(OPENMP_ENABLED "Whether to enable OpenMP parallelization" ON)
 option(IPO_ENABLED "Whether to enable interprocedural optimization" ON)
@@ -42,13 +43,13 @@ option(GUI_ENABLED "Whether to enable the graphical UI" ON)
 option(OPENGL_ENABLED "Whether to enable OpenGL, if available" ON)
 option(TESTS_ENABLED "Whether to build test binaries" OFF)
 option(ASAN_ENABLED "Whether to enable AddressSanitizer flags" OFF)
-option(PROFILING_ENABLED "Whether to enable google-perftools linker flags" OFF)
+option(PROFILING_ENABLED "Whether to enable google-perftools linker flags" ON)
 option(CCACHE_ENABLED "Whether to enable compiler caching, if available" ON)
 option(CGAL_ENABLED "Whether to enable the CGAL library" ON)
 option(LSD_ENABLED "Whether to enable the LSD library" ON)
-option(DOWNLOAD_ENABLED "Whether to enable (automatic) download of resources (requires Curl/OpenSSL)" ON)
+option(DOWNLOAD_ENABLED "Whether to enable (automatic) download of resources (requires Curl/OpenSSL)" OFF)
 option(UNINSTALL_ENABLED "Whether to create a target to 'uninstall' colmap" ON)
-option(FETCH_POSELIB "Whether to consume PoseLib using FetchContent or find_package" ON)
+option(FETCH_POSELIB "Whether to consume PoseLib using FetchContent or find_package" OFF)
 option(ALL_SOURCE_TARGET "Whether to create a target for all source files (for Visual Studio / XCode development)" OFF)
 
 # Disables default features, as we specify each required feature manually below.
@@ -228,7 +229,7 @@ include_directories(src)
 link_directories(${COLMAP_LINK_DIRS})
 
 add_subdirectory(src/colmap)
-add_subdirectory(src/thirdparty)
+# add_subdirectory(src/thirdparty)
 
 ################################################################################
 # Generate source groups for Visual Studio, XCode, etc.
@@ -251,12 +252,12 @@ COLMAP_ADD_SOURCE_DIR(src/colmap/tools TOOLS_SRCS *.h *.cc)
 COLMAP_ADD_SOURCE_DIR(src/colmap/ui UI_SRCS *.h *.cc)
 COLMAP_ADD_SOURCE_DIR(src/colmap/util UTIL_SRCS *.h *.cc)
 
-if(LSD_ENABLED)
-    COLMAP_ADD_SOURCE_DIR(src/thirdparty/LSD THIRDPARTY_LSD_SRCS *.h *.c)
-endif()
-COLMAP_ADD_SOURCE_DIR(src/thirdparty/PoissonRecon THIRDPARTY_POISSON_RECON_SRCS *.h *.cpp *.inl)
-COLMAP_ADD_SOURCE_DIR(src/thirdparty/SiftGPU THIRDPARTY_SIFT_GPU_SRCS *.h *.cpp *.cu)
-COLMAP_ADD_SOURCE_DIR(src/thirdparty/VLFeat THIRDPARTY_VLFEAT_SRCS *.h *.c *.tc)
+# if(LSD_ENABLED)
+#     COLMAP_ADD_SOURCE_DIR(src/thirdparty/LSD THIRDPARTY_LSD_SRCS *.h *.c)
+# endif()
+# COLMAP_ADD_SOURCE_DIR(src/thirdparty/PoissonRecon THIRDPARTY_POISSON_RECON_SRCS *.h *.cpp *.inl)
+# COLMAP_ADD_SOURCE_DIR(src/thirdparty/SiftGPU THIRDPARTY_SIFT_GPU_SRCS *.h *.cpp *.cu)
+# COLMAP_ADD_SOURCE_DIR(src/thirdparty/VLFeat THIRDPARTY_VLFEAT_SRCS *.h *.c *.tc)
 
 # Add all of the source files to a regular library target, as using a custom
 # target does not allow us to set its C++ include directories (and thus
@@ -279,16 +280,16 @@ if(ALL_SOURCE_TARGET)
         ${TOOLS_SRCS}
         ${UI_SRCS}
         ${UTIL_SRCS}
-        ${THIRDPARTY_POISSON_RECON_SRCS}
-        ${THIRDPARTY_SIFT_GPU_SRCS}
-        ${THIRDPARTY_VLFEAT_SRCS}
+        # ${THIRDPARTY_POISSON_RECON_SRCS}
+        # ${THIRDPARTY_SIFT_GPU_SRCS}
+        # ${THIRDPARTY_VLFEAT_SRCS}
     )
 
-    if(LSD_ENABLED)
-        list(APPEND ALL_SRCS
-            ${THIRDPARTY_LSD_SRCS}
-        )
-    endif()
+    # if(LSD_ENABLED)
+    #     list(APPEND ALL_SRCS
+    #         ${THIRDPARTY_LSD_SRCS}
+    #     )
+    # endif()
 
     add_library(
         ${COLMAP_SRC_ROOT_FOLDER}
@@ -346,13 +347,13 @@ set(COLMAP_EXPORT_LIBS
     colmap_sfm
     colmap_util
     # Third-party.
-    colmap_poisson_recon
-    colmap_vlfeat
+    # colmap_poisson_recon
+    # colmap_vlfeat
 )
 if(LSD_ENABLED)
     list(APPEND COLMAP_EXPORT_LIBS
          # Third-party.
-         colmap_lsd
+        #  colmap_lsd
     )
 endif()
 if(GUI_ENABLED)
@@ -367,13 +368,13 @@ if(CUDA_ENABLED)
     )
 endif()
 if(GPU_ENABLED)
-    list(APPEND COLMAP_EXPORT_LIBS
-         colmap_sift_gpu
-    )
+    # list(APPEND COLMAP_EXPORT_LIBS
+    #      colmap_sift_gpu
+    # )
 endif()
-if(FETCH_POSELIB)
-    list(APPEND COLMAP_EXPORT_LIBS PoseLib)
-endif()
+# if(FETCH_POSELIB)
+#     list(APPEND COLMAP_EXPORT_LIBS PoseLib)
+# endif()
 
 # Add unified interface library target to export.
 add_library(colmap INTERFACE)
