@@ -38,7 +38,8 @@
 #include "colmap/util/opengl_utils.h"
 
 #if defined(COLMAP_GPU_ENABLED)
-#include "thirdparty/SiftGPU/SiftGPU.h"
+// #include "thirdparty/SiftGPU/SiftGPU.h"
+#include "SiftGPU/SiftGPU.h"
 #if !defined(COLMAP_GUI_ENABLED)
 // GLEW symbols are already defined by Qt.
 #include <GL/glew.h>
@@ -46,8 +47,8 @@
 #endif  // COLMAP_GPU_ENABLED
 #include "colmap/util/eigen_alignment.h"
 
-#include "thirdparty/VLFeat/covdet.h"
-#include "thirdparty/VLFeat/sift.h"
+#include "vlfeat/covdet.h"
+#include "vlfeat/sift.h"
 
 #include <array>
 #include <fstream>
@@ -361,7 +362,7 @@ class CovariantSiftCPUFeatureExtractor : public FeatureExtractor {
           covdet.get(), data_float.data(), bitmap.Width(), bitmap.Height());
     }
 
-    vl_covdet_detect(covdet.get(), options_.max_num_features);
+    vl_covdet_detect(covdet.get());
 
     if (options_.estimate_affine_shape) {
       vl_covdet_extract_affine_shape(covdet.get());
@@ -372,17 +373,25 @@ class CovariantSiftCPUFeatureExtractor : public FeatureExtractor {
     }
 
     const int num_features = vl_covdet_get_num_features(covdet.get());
-    VlCovDetFeature* features = vl_covdet_get_features(covdet.get());
+    auto features = reinterpret_cast<VlCovDetFeature*>(vl_covdet_get_features(covdet.get()));
 
-    // Sort features according to detected octave and scale.
+    // Example: Sort features by peakScore as a substitute (assuming higher is better).
     std::sort(
         features,
         features + num_features,
         [](const VlCovDetFeature& feature1, const VlCovDetFeature& feature2) {
-          if (feature1.o == feature2.o) {
-            return feature1.s > feature2.s;
+          if (feature1.peakScore == feature2.peakScore) {
+            if(feature1.edgeScore == feature2.edgeScore) {
+              if(feature1.orientationScore == feature2.orientationScore) {
+                return feature1.laplacianScaleScore > feature2.laplacianScaleScore;
+              } else {
+                return feature1.orientationScore > feature2.orientationScore;
+              }
+            } else {
+              return feature1.edgeScore > feature2.edgeScore;
+            }
           } else {
-            return feature1.o > feature2.o;
+            return feature1.peakScore > feature2.peakScore;
           }
         });
 
@@ -403,7 +412,7 @@ class CovariantSiftCPUFeatureExtractor : public FeatureExtractor {
       keypoints->push_back(keypoint);
 
       const int octave_scale_idx =
-          features[i].o * kMaxOctaveResolution + features[i].s;
+          (features[i].peakScore + features[i].edgeScore) * kMaxOctaveResolution + (features[i].orientationScore + features[i].laplacianScaleScore);
       THROW_CHECK_LE(octave_scale_idx, prev_octave_scale_idx);
 
       if (octave_scale_idx != prev_octave_scale_idx &&
