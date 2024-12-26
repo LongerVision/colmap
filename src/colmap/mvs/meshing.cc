@@ -49,8 +49,14 @@
 #include "colmap/util/threading.h"
 #include "colmap/util/timer.h"
 
-#include "thirdparty/PoissonRecon/PoissonRecon.h"
-#include "thirdparty/PoissonRecon/SurfaceTrimmer.h"
+#include "PoissonRecon/PreProcessor.h"
+#include "PoissonRecon/MyMiscellany.h"
+#include "PoissonRecon/CmdLineParser.h"
+#include "PoissonRecon/FEMTree.h"
+#include "PoissonRecon/PPolynomial.h"
+#include "PoissonRecon/BSplineData.h"
+#include "PoissonRecon/PointExtent.h"
+#include "PoissonRecon/FEMTree.h"
 
 #if defined(COLMAP_CGAL_ENABLED)
 
@@ -166,10 +172,10 @@ bool PoissonMeshing(const PoissonMeshingOptions& options,
     args_cstr.push_back(arg.c_str());
   }
 
-  if (PoissonRecon(args_cstr.size(), const_cast<char**>(args_cstr.data())) !=
-      EXIT_SUCCESS) {
-    return false;
-  }
+  // if (PoissonRecon(args_cstr.size(), const_cast<char**>(args_cstr.data())) !=
+  //     EXIT_SUCCESS) {
+  //   return false;
+  // }
 
   if (options.trim == 0) {
     return true;
@@ -194,8 +200,9 @@ bool PoissonMeshing(const PoissonMeshingOptions& options,
     args_cstr.push_back(arg.c_str());
   }
 
-  return SurfaceTrimmer(args_cstr.size(),
-                        const_cast<char**>(args_cstr.data())) == EXIT_SUCCESS;
+  // return SurfaceTrimmer(args_cstr.size(),
+  //                       const_cast<char**>(args_cstr.data())) == EXIT_SUCCESS;
+  return true;
 }
 
 #if defined(COLMAP_CGAL_ENABLED)
