@@ -105,6 +105,12 @@ if(NOT FETCH_POSELIB)
     find_package(PoseLib ${COLMAP_FIND_TYPE})
 endif()
 
+# Assuming the path to PoissonRecon's CMake configuration files is already set
+# If not, you can append it manually as follows:
+list(APPEND CMAKE_PREFIX_PATH "/usr/local/lib/cmake/PoissonRecon")
+
+find_package(PoissonRecon ${COLMAP_FIND_TYPE})
+
 set(COLMAP_LINK_DIRS ${Boost_LIBRARY_DIRS})
 
 set(CUDA_MIN_VERSION "7.0")
@@ -172,7 +178,7 @@ else()
 endif()
 
 if(GUI_ENABLED)
-    find_package(Qt5 5.4 ${COLMAP_FIND_TYPE} COMPONENTS Core OpenGL Widgets)
+    find_package(Qt5 5.15 ${COLMAP_FIND_TYPE} COMPONENTS Core OpenGL Widgets)
     message(STATUS "Found Qt")
     message(STATUS "  Module : ${Qt5Core_DIR}")
     message(STATUS "  Module : ${Qt5OpenGL_DIR}")
@@ -219,8 +225,8 @@ else()
 endif()
 
 set(GPU_ENABLED OFF)
-if(OPENGL_ENABLED OR CUDA_ENABLED)
+if(CUDA_ENABLED)
     add_definitions("-DCOLMAP_GPU_ENABLED")
-    message(STATUS "Enabling GPU support (OpenGL: ${OPENGL_ENABLED}, CUDA: ${CUDA_ENABLED})")
+    message(STATUS "Enabling GPU support (CUDA: ${CUDA_ENABLED})")
     set(GPU_ENABLED ON)
 endif()
