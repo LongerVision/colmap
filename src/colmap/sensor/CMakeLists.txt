@@ -38,11 +38,11 @@ COLMAP_ADD_LIBRARY(
         models.h models.cc
         specs.h specs.cc
     PUBLIC_LINK_LIBS
+        vl
         Ceres::ceres
         Eigen3::Eigen
     PRIVATE_LINK_LIBS
         colmap_util
-        colmap_vlfeat
         freeimage::FreeImage
 )
 
