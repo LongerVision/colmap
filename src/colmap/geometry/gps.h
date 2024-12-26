@@ -33,6 +33,7 @@
 #include "colmap/util/enum_to_string.h"
 #include "colmap/util/types.h"
 
+#include <ostream>
 #include <vector>
 
 #include <Eigen/Core>
