@@ -32,7 +32,7 @@
 #include "colmap/util/eigen_alignment.h"
 #include "colmap/util/logging.h"
 
-#include "thirdparty/VLFeat/imopv.h"
+#include "vlfeat/imopv.h"
 
 #include <Eigen/Geometry>
 
