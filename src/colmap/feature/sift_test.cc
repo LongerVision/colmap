@@ -41,7 +41,9 @@
 #include "colmap/math/random.h"
 #include "colmap/util/opengl_utils.h"
 
-#include "thirdparty/SiftGPU/SiftGPU.h"
+#if defined(COLMAP_GPU_ENABLED)
+#include "SiftGPU/SiftGPU.h"
+#endif
 
 namespace colmap {
 namespace {
