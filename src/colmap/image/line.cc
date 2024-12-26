@@ -33,7 +33,7 @@
 
 #ifdef COLMAP_LSD_ENABLED
 extern "C" {
-#include "thirdparty/LSD/lsd.h"
+#include "lsd.h"
 }
 #endif
 
