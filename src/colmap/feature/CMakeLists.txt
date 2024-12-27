@@ -45,13 +45,6 @@ COLMAP_ADD_TEST(
     LINK_LIBS colmap_feature_types
 )
 
-find_library(SiftGPU_LIB NAMES siftgpu PATHS /usr/local/lib REQUIRED)
-if(NOT SiftGPU_LIB)
-    message(FATAL_ERROR "SiftGPU library not found")
-else()
-    message(STATUS "SiftGPU library found at: ${SiftGPU_LIB}")
-endif()
-
 COLMAP_ADD_LIBRARY(
     NAME colmap_feature
     SRCS
@@ -78,7 +71,7 @@ COLMAP_ADD_LIBRARY(
         ${SiftGPU_LIB}
 )
 if(GPU_ENABLED)
-    # target_link_libraries(colmap_feature PRIVATE colmap_sift_gpu)
+    target_link_libraries(colmap_feature PRIVATE colmap_sift_gpu)
     if(NOT GUI_ENABLED)
         target_link_libraries(colmap_feature PRIVATE GLEW::GLEW)
     endif()

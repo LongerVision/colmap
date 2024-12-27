@@ -38,8 +38,7 @@
 #include "colmap/util/opengl_utils.h"
 
 #if defined(COLMAP_GPU_ENABLED)
-// #include "thirdparty/SiftGPU/SiftGPU.h"
-#include "SiftGPU/SiftGPU.h"
+#include "thirdparty/SiftGPU/SiftGPU.h"
 #if !defined(COLMAP_GUI_ENABLED)
 // GLEW symbols are already defined by Qt.
 #include <GL/glew.h>
