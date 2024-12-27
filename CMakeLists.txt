@@ -229,7 +229,7 @@ include_directories(src)
 link_directories(${COLMAP_LINK_DIRS})
 
 add_subdirectory(src/colmap)
-add_subdirectory(src/thirdparty)
+# add_subdirectory(src/thirdparty)
 
 ################################################################################
 # Generate source groups for Visual Studio, XCode, etc.
@@ -281,7 +281,7 @@ if(ALL_SOURCE_TARGET)
         ${UI_SRCS}
         ${UTIL_SRCS}
         # ${THIRDPARTY_POISSON_RECON_SRCS}
-        ${THIRDPARTY_SIFT_GPU_SRCS}
+        # ${THIRDPARTY_SIFT_GPU_SRCS}
         # ${THIRDPARTY_VLFEAT_SRCS}
     )
 
@@ -368,9 +368,9 @@ if(CUDA_ENABLED)
     )
 endif()
 if(GPU_ENABLED)
-    list(APPEND COLMAP_EXPORT_LIBS
-         colmap_sift_gpu
-    )
+    # list(APPEND COLMAP_EXPORT_LIBS
+    #      colmap_sift_gpu
+    # )
 endif()
 # if(FETCH_POSELIB)
 #     list(APPEND COLMAP_EXPORT_LIBS PoseLib)
