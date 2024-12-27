@@ -55,15 +55,8 @@ endif()
 find_library(VL_LIB NAMES vl PATHS /usr/local/lib REQUIRED)
 find_path(VL_INCLUDE_DIR NAMES vlfeat PATHS /usr/local/include REQUIRED)
 message(STATUS "VLFeat library found at: ${VL_LIB}")
-
-find_library(SiftGPU_LIB NAMES siftgpu PATHS /usr/local/lib REQUIRED)
-if(NOT SiftGPU_LIB)
-    message(FATAL_ERROR "SiftGPU library not found")
-else()
-    message(STATUS "SiftGPU library found at: ${SiftGPU_LIB}")
-endif()
-
 include_directories(${VL_INCLUDE_DIR})
+
 
 COLMAP_ADD_LIBRARY(
     NAME colmap_exe
@@ -106,14 +99,5 @@ COLMAP_ADD_EXECUTABLE(
         ${OPTIONAL_LIBS}
         Boost::boost
         ${VL_LIB}
-        ${SiftGPU_LIB}
 )
-set_target_properties(colmap_main PROPERTIES
-    OUTPUT_NAME colmap
-    CXX_STANDARD 17  # Assuming C++17
-    INSTALL_RPATH_USE_LINK_PATH TRUE
-)
-
-# If you need to set a specific RPATH
-set_target_properties(colmap_main PROPERTIES INSTALL_RPATH "/usr/local/lib")
-
+set_target_properties(colmap_main PROPERTIES OUTPUT_NAME colmap)
